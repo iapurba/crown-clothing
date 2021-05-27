@@ -4,13 +4,13 @@ import 'firebase/auth';
 
 
 const config = {
-    apiKey: "AIzaSyCEb3vLd_ulbaqMMB_xKSEyBLfZtkZmtBY",
-    authDomain: "crown-db-609a4.firebaseapp.com",
-    projectId: "crown-db-609a4",
-    storageBucket: "crown-db-609a4.appspot.com",
-    messagingSenderId: "319437947232",
-    appId: "1:319437947232:web:faa21eaf3a33e684e3de05",
-    measurementId: "G-LZB0YDH4NX"
+  apiKey: "AIzaSyCI7hynrz22GoiU47oWhJcEcs4-DZhnXJE",
+  authDomain: "crown-db-ee008.firebaseapp.com",
+  projectId: "crown-db-ee008",
+  storageBucket: "crown-db-ee008.appspot.com",
+  messagingSenderId: "578389797146",
+  appId: "1:578389797146:web:c30e429512e29af2f0e4a3",
+  measurementId: "G-SHM0JM8XGZ"
 };
 
 firebase.initializeApp(config);
@@ -38,6 +38,34 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     }
   }
   return userRef;
+};
+
+export const addCollectionsAndDocuments = async (collectionKey, objectsToAdd) => {
+  const collectionRef = firestore.collection(collectionKey);
+  console.log(collectionRef);
+  const batch = firestore.batch();
+  objectsToAdd.forEach(obj => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj)
+    console.log(newDocRef);
+  });
+  return await batch.commit();
+};
+
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items
+    };
+  });
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 }
 
 export const firestore = firebase.firestore();
